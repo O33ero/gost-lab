@@ -2,6 +2,7 @@ package lab3_xorshiftplus
 
 import (
 	"encoding/binary"
+	"fmt"
 	"os"
 )
 
@@ -28,6 +29,38 @@ func Create1000Values(rand *XorShift128Plus) {
 func Create10000Values(rand *XorShift128Plus) {
 	iters := 10000 // 10^4
 	createFile(rand, iters, "xorshift_10000values.bin")
+}
+
+func CreateNValuesInBinaryFormatFile(rand *XorShift128Plus, n int) {
+	createBinaryFormatFile(rand, n, fmt.Sprintf("xorshift_%dbin.txt", n))
+}
+
+func createBinaryFormatFile(rand *XorShift128Plus, iters int, filename string) {
+	err := os.Truncate(filename, 0)
+	if err != nil {
+		panic("failed to clear existed file")
+	}
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	if err != nil {
+		panic("failed to create file: " + err.Error())
+	}
+	defer func(file *os.File) {
+		_ = file.Close()
+	}(file)
+
+	for i := 0; i < iters; i++ {
+		var nextBatch [8]byte
+		value := rand.Next()
+		binary.LittleEndian.PutUint64(nextBatch[:], value)
+
+		for _, bt := range nextBatch {
+			b := fmt.Sprintf("%08b", bt)
+			_, err := file.WriteString(b)
+			if err != nil {
+				panic("failed to append to file: " + err.Error())
+			}
+		}
+	}
 }
 
 func createFile(rand *XorShift128Plus, iters int, filename string) {
