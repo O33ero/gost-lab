@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"gost-lab/internal/lab1_gost34122015"
+	"os"
+	"time"
 )
 
 func main() {
@@ -20,13 +23,23 @@ func main() {
 	}
 	fmt.Printf("Plain: %v\n", plainText)
 
+	b, err := os.ReadFile("xorshift_1mb.bin")
+	if err != nil {
+		panic("failed to read file: " + err.Error())
+	}
+
 	cipher := lab1_gost34122015.NewCipher(key[:])
 
-	encrypted := cipher.Encrypt(plainText[:])
-	fmt.Printf("Encrypt: %v\n", *encrypted)
+	start := time.Now().UnixMilli()
+	for i := 0; i < len(b); i += 16 {
+		encrypted := cipher.Encrypt(b[i : i+16])
+		decrypt := cipher.Decrypt(encrypted[:])
 
-	decrypt := cipher.Decrypt(encrypted[:])
-	fmt.Printf("Decrypt: %v\n", *decrypt)
+		if !bytes.Equal(b[i:i+16], decrypt[:]) {
+			panic("incorrect decrypt")
+		}
 
-	fmt.Printf("Plain == Decrypt: %t", plainText == *decrypt)
+		fmt.Printf("Complete [%d\\%d]\n", i, len(b))
+	}
+	fmt.Printf("Complete in %d msec.\n", time.Now().UnixMilli()-start)
 }
