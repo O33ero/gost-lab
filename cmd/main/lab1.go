@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gost-lab/internal/lab1_gost34122015"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -23,23 +24,27 @@ func main() {
 	}
 	fmt.Printf("Plain: %v\n", plainText)
 
-	b, err := os.ReadFile("xorshift_1mb.bin")
+	b, err := os.ReadFile("xorshift_1000mb.bin")
 	if err != nil {
 		panic("failed to read file: " + err.Error())
 	}
 
 	cipher := lab1_gost34122015.NewCipher(key[:])
 
+	var wg sync.WaitGroup
 	start := time.Now().UnixMilli()
 	for i := 0; i < len(b); i += 16 {
-		encrypted := cipher.Encrypt(b[i : i+16])
-		decrypt := cipher.Decrypt(encrypted[:])
+		wg.Add(1)
+		go func(part int) {
+			defer wg.Done()
+			encrypted := cipher.Encrypt(b[part : part+16])
+			decrypt := cipher.Decrypt(encrypted[:])
 
-		if !bytes.Equal(b[i:i+16], decrypt[:]) {
-			panic("incorrect decrypt")
-		}
-
-		fmt.Printf("Complete [%d\\%d]\n", i, len(b))
+			if !bytes.Equal(b[part:part+16], decrypt[:]) {
+				panic("incorrect decrypt")
+			}
+		}(i)
 	}
+	wg.Wait()
 	fmt.Printf("Complete in %d msec.\n", time.Now().UnixMilli()-start)
 }
