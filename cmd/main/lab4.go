@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"gost-lab/internal/lab4_crisp"
+	"os"
 	"time"
 )
 
@@ -79,16 +80,22 @@ func main() {
 	binary.BigEndian.PutUint16(randomSeed[:], uint16(time.Now().Nanosecond()))
 	crisp := lab4_crisp.New(key[:], randomSeed)
 
-	messages := crisp.Encode(plainText[:])
-	for _, m := range messages {
-		fmt.Println(m.String())
-		fmt.Println()
+	b, err := os.ReadFile("xorshift_1000mb.bin")
+	if err != nil {
+		panic("failed to open file: " + err.Error())
 	}
 
+	start := time.Now().UnixMilli()
+	messages := crisp.Encode(b[:])
+	fmt.Printf("Time (encode): %d msec.\n", time.Now().UnixMilli()-start)
+
 	// decode
-	for i, m := range messages {
+	start = time.Now().UnixMilli()
+	for _, m := range messages {
 		message := m.Digits
-		decrypt := crisp.DecodeNextBlock(message)
-		fmt.Printf("Block [%d]: %s\n", i, hex.EncodeToString(decrypt))
+		_ = crisp.DecodeNextBlock(message)
+		//fmt.Printf("Block [%d]: %s\n", i, hex.EncodeToString(decrypt))
 	}
+
+	fmt.Printf("Time (decode): %d msec.\n", time.Now().UnixMilli()-start)
 }
