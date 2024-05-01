@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"gost-lab/internal/lab2_gost34112012_256"
+	"time"
 )
 
 func main() {
@@ -52,4 +53,17 @@ func main() {
 	//		d323f2991c8d4534
 	//		013137010a83754f
 	//		d0af6d7cd4922ed9
+
+	//generate file
+	start := time.Now().UnixMilli()
+	lab2_gost34112012_256.Create10in4Keys(key)
+	fmt.Printf("Create 10^4 keys: %d msec.\n", time.Now().UnixMilli()-start)
+
+	start = time.Now().UnixMilli()
+	lab2_gost34112012_256.Create10in5Keys(key)
+	fmt.Printf("Create 10^5 keys: %d msec.\n", time.Now().UnixMilli()-start)
+
+	start = time.Now().UnixMilli()
+	lab2_gost34112012_256.Create10in6Keys(key)
+	fmt.Printf("Create 10^6 keys: %d msec.\n", time.Now().UnixMilli()-start)
 }
