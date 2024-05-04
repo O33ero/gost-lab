@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
@@ -80,22 +81,23 @@ func main() {
 	binary.BigEndian.PutUint16(randomSeed[:], uint16(time.Now().Nanosecond()))
 	crisp := lab4_crisp.New(key[:], randomSeed)
 
-	b, err := os.ReadFile("xorshift_1000mb.bin")
+	b, err := os.ReadFile("xorshift_100mb.bin")
 	if err != nil {
 		panic("failed to open file: " + err.Error())
 	}
 
 	start := time.Now().UnixMilli()
-	messages := crisp.Encode(b[:])
-	fmt.Printf("Time (encode): %d msec.\n", time.Now().UnixMilli()-start)
+	for i := 0; i < len(b); i += BlockSize {
+		message := crisp.EncodeNextBlock(b[i : i+BlockSize])
+		decoded := crisp.DecodeNextBlock(message.Digits)
 
-	// decode
-	start = time.Now().UnixMilli()
-	for _, m := range messages {
-		message := m.Digits
-		_ = crisp.DecodeNextBlock(message)
-		//fmt.Printf("Block [%d]: %s\n", i, hex.EncodeToString(decrypt))
+		if !bytes.Equal(b[i:i+BlockSize], decoded) {
+			panic("incorrect decode")
+		}
+
+		if i%(4096*4) == 0 {
+			fmt.Printf("Complete %d/%d [%.2f%%]\n", i, len(b), float64(i)/float64(len(b))*100)
+		}
 	}
-
-	fmt.Printf("Time (decode): %d msec.\n", time.Now().UnixMilli()-start)
+	fmt.Printf("Elapsed: %d msec.\n", time.Now().UnixMilli()-start)
 }
