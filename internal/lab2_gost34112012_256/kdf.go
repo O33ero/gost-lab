@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"fmt"
 	"hash"
+	"runtime"
 )
 
 type KDF struct {
@@ -16,6 +17,7 @@ func NewKDF(key []byte) *KDF {
 
 func (kdf *KDF) Close() {
 	kdf.h.Reset()
+	runtime.GC()
 	fmt.Printf("Clear mem [KDF]: %p\n", &kdf)
 }
 

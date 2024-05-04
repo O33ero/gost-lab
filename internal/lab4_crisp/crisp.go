@@ -7,6 +7,7 @@ import (
 	"gost-lab/internal/lab1_gost34122015"
 	"gost-lab/internal/lab2_gost34112012_256"
 	"gost-lab/internal/lab3_xorshiftplus"
+	"runtime"
 )
 
 var (
@@ -43,6 +44,7 @@ func (c *Crisp) Close() {
 	c.Encoder.kdf.Close()
 	c.Encoder.cipher.Close()
 	c.Encoder.seqNum = 0
+	runtime.GC()
 	fmt.Printf("Clear mem [Crisp]: %p\n", &c)
 }
 

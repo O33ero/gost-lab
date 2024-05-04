@@ -1,6 +1,9 @@
 package lab1_gost34122015
 
-import "fmt"
+import (
+	"fmt"
+	"runtime"
+)
 
 const (
 	BlockSize       = 16 // bytes
@@ -104,6 +107,7 @@ func (c *Cipher) Close() {
 			c.keySet[i][j] = 0x00
 		}
 	}
+	runtime.GC()
 	fmt.Printf("Clear mem [Cipher]: %p\n", &c)
 }
 

@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
+	"runtime"
 )
 
 type CtrAcpkm struct {
@@ -15,6 +16,7 @@ func (c *CtrAcpkm) Close() {
 	for i := 0; i < len(c.initialVector); i++ {
 		c.initialVector[i] = 0x00
 	}
+	runtime.GC()
 	fmt.Printf("Clear mem [CtrAcpkm]: %p\n", &c)
 }
 
