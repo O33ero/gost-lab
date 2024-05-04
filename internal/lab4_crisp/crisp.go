@@ -33,6 +33,19 @@ type Crisp struct {
 	randomSeed [16]byte
 }
 
+func (c *Crisp) Close() {
+	for i := 0; i < len(c.randomSeed); i++ {
+		c.randomSeed[i] = 0x00
+	}
+	c.Decoder.kdf.Close()
+	c.Decoder.cipher.Close()
+	c.Decoder.seqNum = 0
+	c.Encoder.kdf.Close()
+	c.Encoder.cipher.Close()
+	c.Encoder.seqNum = 0
+	fmt.Printf("Clear mem [Crisp]: %p\n", &c)
+}
+
 type Decoder struct {
 	random *lab3_xorshiftplus.XorShift128Plus
 	kdf    *lab2_gost34112012_256.KDF

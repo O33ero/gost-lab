@@ -4,10 +4,18 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
+	"fmt"
 )
 
 type CtrAcpkm struct {
-	InitialVector [BlockSize]byte
+	initialVector [BlockSize]byte
+}
+
+func (c *CtrAcpkm) Close() {
+	for i := 0; i < len(c.initialVector); i++ {
+		c.initialVector[i] = 0x00
+	}
+	fmt.Printf("Clear mem [CtrAcpkm]: %p\n", &c)
 }
 
 func NewCtrAcpkm() *CtrAcpkm {
@@ -26,7 +34,7 @@ func (c *CtrAcpkm) Encrypt(plaintext, key []byte) ([BlockSize]byte, []byte) {
 	var ciphertext [BlockSize]byte
 	var mac []byte
 
-	gamma = initGamma(c.InitialVector[:], key)
+	gamma = initGamma(c.initialVector[:], key)
 
 	xor(ciphertext[:], plaintext, gamma)
 	mac = createVerificationCode(ciphertext[:], key)
@@ -44,7 +52,7 @@ func (c *CtrAcpkm) Decrypt(ciphertext, key, mac []byte) [BlockSize]byte {
 		panic("Expected MAC isn't equal to received MAC")
 	}
 
-	gamma = initGamma(c.InitialVector[:], key)
+	gamma = initGamma(c.initialVector[:], key)
 
 	xor(plaintext[:], ciphertext, gamma)
 

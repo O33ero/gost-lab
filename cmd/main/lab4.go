@@ -80,8 +80,9 @@ func main() {
 	var randomSeed [16]byte
 	binary.BigEndian.PutUint16(randomSeed[:], uint16(time.Now().Nanosecond()))
 	crisp := lab4_crisp.New(key[:], randomSeed)
+	defer crisp.Close()
 
-	b, err := os.ReadFile("xorshift_100mb.bin")
+	b, err := os.ReadFile("xorshift_1mb.bin")
 	if err != nil {
 		panic("failed to open file: " + err.Error())
 	}

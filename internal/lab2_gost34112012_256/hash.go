@@ -2,6 +2,7 @@ package lab2_gost34112012_256
 
 import (
 	"encoding/binary"
+	"fmt"
 )
 
 const (
@@ -258,6 +259,22 @@ type Hash struct {
 	hsh  *[BlockSize]byte
 	chk  *[BlockSize]byte
 	tmp  *[BlockSize]byte
+}
+
+func (h *Hash) Clear() {
+	for i := 0; i < len(h.buf); i++ {
+		h.buf[i] = 0x00
+	}
+	for i := 0; i < len(h.hsh); i++ {
+		h.hsh[i] = 0x00
+	}
+	for i := 0; i < len(h.chk); i++ {
+		h.chk[i] = 0x00
+	}
+	for i := 0; i < len(h.tmp); i++ {
+		h.tmp[i] = 0x00
+	}
+	fmt.Printf("Clear mem [Hash]: %p\n", &h)
 }
 
 func NewHash() *Hash {

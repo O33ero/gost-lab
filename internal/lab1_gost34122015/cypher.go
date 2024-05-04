@@ -1,5 +1,7 @@
 package lab1_gost34122015
 
+import "fmt"
+
 const (
 	BlockSize       = 16 // bytes
 	KeySize         = 32 // bytes
@@ -92,6 +94,19 @@ var (
 	gfCache [256][256]byte
 )
 
+type Cipher struct {
+	keySet [KeySetSize][BlockSize]byte
+}
+
+func (c *Cipher) Close() {
+	for i := 0; i < len(c.keySet); i++ {
+		for j := 0; j < len(c.keySet[0]); j++ {
+			c.keySet[i][j] = 0x00
+		}
+	}
+	fmt.Printf("Clear mem [Cipher]: %p\n", &c)
+}
+
 func init() {
 	initGfCache()
 	initKeyConstant()
@@ -171,10 +186,6 @@ func sInverse(block *[BlockSize]byte) {
 	for i := 0; i < BlockSize; i++ { // substitute byte by inverse S-Box
 		block[i] = sBoxInv[int(block[i])]
 	}
-}
-
-type Cipher struct {
-	keySet [KeySetSize][BlockSize]byte
 }
 
 func NewCipher(key []byte) *Cipher {

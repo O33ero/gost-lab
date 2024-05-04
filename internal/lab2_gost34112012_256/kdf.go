@@ -2,6 +2,7 @@ package lab2_gost34112012_256
 
 import (
 	"crypto/hmac"
+	"fmt"
 	"hash"
 )
 
@@ -11,6 +12,11 @@ type KDF struct {
 
 func NewKDF(key []byte) *KDF {
 	return &KDF{hmac.New(newHash, key)}
+}
+
+func (kdf *KDF) Close() {
+	kdf.h.Reset()
+	fmt.Printf("Clear mem [KDF]: %p\n", &kdf)
 }
 
 func (kdf *KDF) Derive(label, seed []byte, r int) (res []byte) {

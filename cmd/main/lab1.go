@@ -30,6 +30,7 @@ func main() {
 	}
 
 	cipher := lab1_gost34122015.NewCipher(key[:])
+	defer cipher.Close()
 
 	var wg sync.WaitGroup
 	start := time.Now().UnixMilli()

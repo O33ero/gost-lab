@@ -46,6 +46,8 @@ func main() {
 		0xaf, 0x21, 0x43, 0x41, 0x45, 0x65, 0x63, 0x78,
 	}
 	kdf := lab2_gost34112012_256.NewKDF(key)
+	defer kdf.Close()
+
 	res := kdf.Derive(label, seed, 1)
 	fmt.Printf("Derive:\n%s\n", hex.EncodeToString(res))
 	// expect:
