@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"gost-lab/internal/control"
 	"gost-lab/internal/lab4_crisp"
 	"os"
 	"time"
@@ -16,6 +17,9 @@ const (
 )
 
 func main() {
+	ec := control.NewExecuteControl()
+	defer ec.Wait()
+
 	// input:
 	// - plaintext
 	// - key

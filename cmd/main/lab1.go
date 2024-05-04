@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"gost-lab/internal/control"
 	"gost-lab/internal/lab1_gost34122015"
 	"os"
 	"sync"
@@ -10,6 +11,9 @@ import (
 )
 
 func main() {
+	ec := control.NewExecuteControl()
+	defer ec.Wait()
+
 	key := [32]byte{
 		0x80, 0x94, 0xA8, 0xBC, 0xC0, 0xD4, 0xE8, 0xFC,
 		0x81, 0x95, 0xA9, 0xBD, 0xC1, 0xD5, 0xE9, 0xFD,

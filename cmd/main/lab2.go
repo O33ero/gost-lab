@@ -3,11 +3,15 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"gost-lab/internal/control"
 	"gost-lab/internal/lab2_gost34112012_256"
 	"time"
 )
 
 func main() {
+	ec := control.NewExecuteControl()
+	defer ec.Wait()
+
 	// any plaintext
 	plaintext := []byte{
 		0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
