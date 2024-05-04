@@ -13,6 +13,7 @@ import (
 func main() {
 	ec := control.NewExecuteControl()
 	defer ec.Wait()
+	_ = control.NewAccessControl()
 
 	key := [32]byte{
 		0x80, 0x94, 0xA8, 0xBC, 0xC0, 0xD4, 0xE8, 0xFC,

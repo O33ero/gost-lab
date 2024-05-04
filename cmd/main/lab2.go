@@ -11,6 +11,7 @@ import (
 func main() {
 	ec := control.NewExecuteControl()
 	defer ec.Wait()
+	_ = control.NewAccessControl()
 
 	// any plaintext
 	plaintext := []byte{

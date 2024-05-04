@@ -19,6 +19,7 @@ const (
 func main() {
 	ec := control.NewExecuteControl()
 	defer ec.Wait()
+	_ = control.NewAccessControl()
 
 	// input:
 	// - plaintext
